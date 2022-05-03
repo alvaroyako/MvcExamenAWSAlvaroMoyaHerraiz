@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using Microsoft.Extensions.Configuration;
 using MvcExamenAWSAlvaroMoyaHerraiz.Data;
 using MvcExamenAWSAlvaroMoyaHerraiz.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,10 +13,14 @@ namespace MvcExamenAWSAlvaroMoyaHerraiz.Repositories
 {
     public class RepositoryChampions
     {
+        private string bucketName;
+        private IAmazonS3 awsClient;
         private ChampionContext context;
-        public RepositoryChampions(IConfiguration configuration,ChampionContext context)
+        public RepositoryChampions(IAmazonS3 client, IConfiguration configuration,ChampionContext context)
         {
+            this.awsClient = client;
             this.context = context;
+            this.bucketName=configuration.GetValue<string>("AWS:AWSBucket");
         }
 
         public List<Equipo> GetEquipos()
@@ -70,6 +77,28 @@ namespace MvcExamenAWSAlvaroMoyaHerraiz.Repositories
             {
                 return this.context.Apuestas.Max(z => z.IdApuesta) + 1;
             }
+        }
+
+        public async Task <bool> UploadFile(Stream stream,string fileName)
+        {
+            PutObjectRequest request = new PutObjectRequest
+            {
+                InputStream = stream,
+                Key = fileName,
+                BucketName = this.bucketName
+            };
+            
+            PutObjectResponse response =
+    await this.awsClient.PutObjectAsync(request);
+            if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
 
     }

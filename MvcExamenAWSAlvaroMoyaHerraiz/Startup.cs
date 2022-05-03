@@ -1,3 +1,4 @@
+using Amazon.S3;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,6 +30,8 @@ namespace MvcExamenAWSAlvaroMoyaHerraiz
             string cadena = this.Configuration.GetConnectionString("MariaDB");
             services.AddTransient<RepositoryChampions>();
             services.AddDbContext<ChampionContext>(options => options.UseMySql(cadena, ServerVersion.AutoDetect(cadena)));
+            services.AddAWSService<IAmazonS3>();
+
             services.AddControllersWithViews();
         }
 

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MvcExamenAWSAlvaroMoyaHerraiz.Models;
 using MvcExamenAWSAlvaroMoyaHerraiz.Repositories;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,15 +34,20 @@ namespace MvcExamenAWSAlvaroMoyaHerraiz.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(int idjugador,string nombre,string posicion,string imagen,int idequipo)
+        public async Task<IActionResult> Create(int idjugador,string nombre,string posicion,IFormFile imagen,int idequipo)
         {
             Jugador jugador = new Jugador();
             jugador.IdJugador = idjugador;
             jugador.Nombre = nombre;
             jugador.Posicion = posicion;
-            jugador.Imagen = imagen;
+            jugador.Imagen = imagen.FileName;
             jugador.IdEquipo = idequipo;
             this.repo.CrearJugador(jugador);
+            using (Stream stream = imagen.OpenReadStream())
+            {
+                await this.repo.UploadFile(stream, imagen.FileName);
+            }
+                
             return RedirectToAction("Index",new { idequipo=idequipo});
         }
     }
