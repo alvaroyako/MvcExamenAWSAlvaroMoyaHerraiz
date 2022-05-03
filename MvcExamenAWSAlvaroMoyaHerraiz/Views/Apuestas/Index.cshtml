@@ -1,0 +1,71 @@
+﻿@model IEnumerable<MvcExamenAWSAlvaroMoyaHerraiz.Models.Apuesta>
+
+@{
+    ViewData["Title"] = "Index";
+    List<Equipo> equipos = ViewData["EQUIPOS"] as List<Equipo>;
+}
+
+<h1>Index</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Usuario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GolesLocal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GolesVisitante)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Usuario)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GolesLocal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GolesVisitante)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<h2>Crea tu apuesta</h2>
+
+<form method="post">
+    <label>Usuario</label>
+    <input name="usuario" type="text" class="form-control" />
+    <br />
+    <label>Equipo local</label>
+    <select name="idlocal">
+        @foreach (Equipo e in equipos)
+        {
+            <option value="@e.IdEquipo">@e.Nombre</option>
+        }
+    </select>
+    <br />
+    <label>Equipo Visitante</label>
+    <select name="idvisitante">
+        @foreach (Equipo e in equipos)
+        {
+            <option value="@e.IdEquipo">@e.Nombre</option>
+        }
+    </select>
+    <br />
+    <label>Goles Local</label>
+    <input name="gollocal" type="number" class="form-control" />
+    <br />
+    <label>Goles Visitante</label>
+    <input name="golvisitante" type="number" class="form-control" />
+    <br />
+    <input type="submit" value="Crear apuesta" class="btn btn-primary"/>
+</form>
